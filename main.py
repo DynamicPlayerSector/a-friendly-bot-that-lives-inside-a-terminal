@@ -11,9 +11,9 @@ BYE_SYSTEM_MESSAGE = "You are parting ways with your dear user for now. Express 
 TIMY_FACES = ("＼(≧▽≦)／", "(＾▽＾)", "(((o(*°▽°*)o)))", "(＠＾◡＾)")
 THINKING_FACES = ("｢(ﾟﾍﾟ)　Errrrm…", "?c(ﾟ.ﾟ*)Ummm…", "(￣ω￣;)Ummm…", "σ(ﾟ･ﾟ*)um…")
 
-userPrompt = "Hello! I need your help"
+userPrompt = "Hello!"
 iteration = 0
-response = ""
+response = "Greetings! How can I help?"
 
 def setWorkingDirectoryToCurrent():
     # get the absolute path of the current file
