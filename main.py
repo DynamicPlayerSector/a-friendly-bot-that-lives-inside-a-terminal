@@ -1,6 +1,8 @@
 import os
 import time
 import random
+import string
+import json
 from IPython.display import clear_output
 
 import openai
@@ -14,6 +16,8 @@ THINKING_FACES = ("｢(ﾟﾍﾟ)　Errrrm…", "?c(ﾟ.ﾟ*)Ummm…", "(￣ω�
 userPrompt = "Hello!"
 iteration = 0
 response = "Greetings! How can I help?"
+previousUserPrompt = ""
+chatHistory = []
 
 def setWorkingDirectoryToCurrent():
     # get the absolute path of the current file
@@ -36,15 +40,23 @@ def askGPT(previous_response, prompt: str, systemMessage):
     DELAY_SECONDS = 6
     while True:
         try:
+            messagesSent = []
+            messagesSent.append({"role": "system", "content": f"{systemMessage}"})
+            messagesSent.append({"role": "user", "content": f"{previousUserPrompt}"})
+                
+            messagesSent.extend([
+                {"role": "assistant", "content": previous_response},
+                {"role": "user", "content": prompt}
+            ])
             chatCompletition = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": f"{systemMessage}"},
-                    {"role": "assistant", "content": previous_response},
-                    {"role": "user", "content": prompt}
-                ]
+                model = "gpt-3.5-turbo",
+                messages = messagesSent
             )
             response = chatCompletition.choices[0].message.content
+            # print(messagesSent) debugging purposes
+            # input()
+            chatHistory.append({"role": "user", "content": prompt})
+            chatHistory.append({"role": "assistant", "content": response})
             return response
         except:
             print(f"{random.choice(THINKING_FACES)}")
@@ -62,10 +74,18 @@ while True:
     clearOutput()
     faceTimy = random.choice(TIMY_FACES)
     response = askGPT(response, userPrompt, SYSTEM_MESSAGE)
+    previousUserPrompt = userPrompt
     clearOutput()
     print(f"{faceTimy} Timy")
     print(f"{response}")
-    print("="*20)
+    print("="*46)
     print(f"{iteration}:{userPrompt}")
     userPrompt = input(":")
     iteration += 1
+
+# Generate a random filename
+filename = ''.join(random.choices(string.ascii_lowercase, k=10)) + '.json'
+
+# Write the list to the file in JSON format
+with open(filename, 'w') as f:
+    json.dump(chatHistory, f)
